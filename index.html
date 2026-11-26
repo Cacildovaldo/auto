@@ -1,1 +1,770 @@
-bgds
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex, notranslate" />
+  <meta name="referrer" content="no-referrer" />
+  <title>LotoFácil Matriz — Fechamentos Profissionais</title>
+  <style>
+    :root {
+      --primary: #0b2545; --primary-light: #133c6e; --accent: #059669;
+      --accent-hover: #047857; --blue: #2563eb; --blue-hover: #1d4ed8;
+      --bg: #eef2f7; --card: #ffffff; --text: #1e293b; --muted: #64748b;
+      --border: #cbd5e1; --border-light: #e2e8f0; --danger: #dc2626;
+      --warning: #d97706; --radius: 14px;
+      --shadow: 0 6px 14px -3px rgba(11, 37, 69, 0.08), 0 2px 6px -2px rgba(11, 37, 69, 0.05);
+      --purple: #7c3aed; --purple-hover: #6d28d9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.55; display: flex; flex-direction: column; min-height: 100vh; }
+    .hidden { display: none !important; }
+
+    /* Tela de Bloqueio */
+    #lockScreen { position: fixed; inset: 0; background: linear-gradient(135deg, #0b2545 0%, #133c6e 100%); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 9999; }
+    .lock-card { background: #fff; border-radius: 16px; padding: 34px 30px; max-width: 420px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0,0,0,.4); text-align: center; }
+    .lock-icon { width: 64px; height: 64px; margin: 0 auto 16px; background: linear-gradient(145deg, #1e4b85, #0b2545); border: 2px solid #fbbf24; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; }
+    .lock-card h2 { color: var(--primary); font-size: 1.3rem; margin-bottom: 6px; }
+    .lock-card p { color: var(--muted); font-size: .88rem; margin-bottom: 20px; }
+    .lock-card input[type="password"] { width: 100%; padding: 13px 15px; border: 2px solid var(--border); border-radius: 10px; font-size: 1rem; text-align: center; letter-spacing: 2px; margin-bottom: 14px; font-family: inherit; }
+    .lock-card input[type="password"]:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.15); }
+    .lock-card button { width: 100%; padding: 13px; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-size: .95rem; font-weight: 700; cursor: pointer; }
+    .lock-card button:hover { background: var(--accent-hover); }
+    .lock-error { color: var(--danger); font-size: .85rem; font-weight: 600; margin-top: 12px; min-height: 20px; }
+    .lock-hint { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-light); font-size: .78rem; color: var(--muted); line-height: 1.5; }
+
+    /* Header */
+    header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: #fff; padding: 15px 24px; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 40; }
+    .header-inner { max-width: 1240px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .brand h1 { font-size: 1.25rem; font-weight: 800; }
+    .brand p { font-size: .78rem; color: #cbd5e1; }
+    .header-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .badge-offline { background: #7c2d12; border: 1px solid #fbbf24; color: #fef3c7; padding: 6px 13px; border-radius: 999px; font-size: .8rem; font-weight: 700; }
+
+    /* Container e Cards */
+    .container { max-width: 1240px; margin: 22px auto 50px; padding: 0 20px; display: flex; flex-direction: column; gap: 20px; flex: 1; }
+    .card { background: var(--card); border: 1px solid var(--border-light); border-radius: var(--radius); padding: 22px 24px; box-shadow: var(--shadow); }
+    .card-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-light); }
+    .card-header h2 { font-size: 1.1rem; color: var(--primary); font-weight: 800; }
+    .card-header p { font-size: .82rem; color: var(--muted); }
+
+    /* Controles */
+    .controls-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin-bottom: 16px; }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: .8rem; font-weight: 700; color: #334155; }
+    .field input, .field select { padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 9px; font-size: .9rem; background: #fff; color: var(--text); }
+
+    /* Volante Lotofácil (5x5) */
+    .num-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 14px 0 18px; max-width: 420px; }
+    .dezena-btn { padding: 12px 4px; border-radius: 999px; border: 1.5px solid var(--border); background: #f8fafc; color: var(--primary); font-weight: 800; font-size: .95rem; cursor: pointer; transition: all .14s ease; position: relative; }
+    .dezena-btn:hover { border-color: var(--purple); }
+    .dezena-btn.selected { background: var(--purple); border-color: var(--purple); color: #fff; }
+    .dezena-btn.fixed { background: #fbbf24; border-color: #d97706; color: #78350f; }
+    .dezena-btn.fixed::after { content: "F"; position: absolute; top: -6px; right: -6px; background: #d97706; color: #fff; font-size: .6rem; font-weight: 900; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+    /* Botões */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 10px 16px; border-radius: 9px; font-size: .88rem; font-weight: 700; border: none; cursor: pointer; }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { background: var(--blue-hover); }
+    .btn-success { background: var(--accent); color: #fff; }
+    .btn-success:hover { background: var(--accent-hover); }
+    .btn-dark { background: var(--primary); color: #fff; }
+    .btn-purple { background: var(--purple); color: #fff; }
+    .btn-purple:hover { background: var(--purple-hover); }
+    .btn-outline { background: #fff; color: var(--text); border: 1px solid var(--border); }
+    .btn-outline:hover { background: #f8fafc; }
+    .btn-sm { padding: 6px 12px; font-size: .8rem; }
+
+    /* Sumário */
+    .summary-bar { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+    .stat-pill { background: #f8fafc; border: 1px solid var(--border-light); border-radius: 10px; padding: 10px 14px; font-size: .85rem; }
+    .stat-pill strong { color: var(--primary); }
+
+    /* Grid do Conferidor */
+    .conferidor-grid { display: grid; grid-template-columns: 2.2fr 1fr; gap: 18px; }
+
+    /* Tabela de Prêmios */
+    .tabela-resumo { width: 100%; border-collapse: collapse; font-size: .86rem; }
+    .tabela-resumo th, .tabela-resumo td { padding: 8px 12px; border: 1px solid var(--border-light); text-align: center; }
+    .tabela-resumo th { background: #f1f5f9; color: var(--primary); font-weight: 700; }
+    .tabela-resumo tr.total-row { background: #eff6ff; font-weight: 800; color: var(--blue); }
+    .tabela-resumo tr.win-row { background: #dcfce7; font-weight: 700; }
+
+    /* Lista de Jogos */
+    .jogos-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; max-height: 520px; overflow-y: auto; padding: 4px; }
+    .jogo-item { border: 1px solid var(--border-light); background: #f8fafc; border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; font-size: .86rem; }
+    .jogo-item-head { display: flex; justify-content: space-between; align-items: center; }
+    .jogo-numero { font-size: .72rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+    .jogo-dezenas { font-weight: 800; color: var(--primary); letter-spacing: .5px; font-size: .82rem; line-height: 1.6; }
+    .hit-tag { font-size: .72rem; font-weight: 800; padding: 3px 9px; border-radius: 999px; background: #e2e8f0; color: #334155; white-space: nowrap; }
+    .hit-tag.win { background: #dcfce7; color: #166534; }
+    .hit-tag.top { background: #fef3c7; color: #92400e; }
+
+    /* Info Cologa */
+    .info-cologa { background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 12px 16px; font-size: .83rem; margin-top: 14px; }
+    .info-cologa h4 { color: #92400e; font-size: .85rem; margin-bottom: 6px; font-weight: 800; }
+    .info-cologa ul { margin-left: 18px; color: #78350f; }
+    .info-cologa li { margin-bottom: 3px; }
+
+    /* Toast */
+    .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(30px); background: #065f46; color: #fff; padding: 12px 20px; border-radius: 10px; font-size: .9rem; font-weight: 700; box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: all .25s ease; z-index: 10000; max-width: 90vw; text-align: center; }
+    .toast.err { background: var(--danger); }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Alerta */
+    .alert-info { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 10px 14px; border-radius: 9px; font-size: .82rem; margin-bottom: 12px; }
+    .alert-warn { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; padding: 10px 14px; border-radius: 9px; font-size: .82rem; margin-bottom: 12px; }
+
+    /* Bolão */
+    .bolao-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .bolao-card { background: #f8fafc; border: 1px solid var(--border-light); border-radius: 10px; padding: 14px; text-align: center; }
+    .bolao-card h4 { font-size: .8rem; color: var(--muted); font-weight: 700; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
+    .bolao-card .valor { font-size: 1.3rem; font-weight: 800; color: var(--primary); }
+    .bolao-card .detalhe { font-size: .75rem; color: var(--muted); margin-top: 4px; }
+
+    /* Observações */
+    .obs-list { list-style: none; padding: 0; }
+    .obs-list li { padding: 10px 14px; border-left: 4px solid var(--warning); background: #fffbeb; margin-bottom: 8px; border-radius: 6px; font-size: .85rem; }
+    .obs-list li strong { color: #92400e; }
+    .obs-list li.info { border-left-color: var(--blue); background: #eff6ff; }
+    .obs-list li.info strong { color: #1e40af; }
+    .obs-list li.danger { border-left-color: var(--danger); background: #fee2e2; }
+    .obs-list li.danger strong { color: #991b1b; }
+    .obs-list li.ok { border-left-color: var(--accent); background: #dcfce7; }
+    .obs-list li.ok strong { color: #166534; }
+
+    /* Rodapé */
+    footer { background: var(--primary); color: #cbd5e1; text-align: center; padding: 20px; font-size: .8rem; margin-top: auto; }
+    footer p { margin-bottom: 8px; }
+    footer .destaque { color: #fbbf24; font-weight: 800; font-size: .95rem; }
+
+    @media (max-width: 840px) {
+      .conferidor-grid { grid-template-columns: 1fr; }
+    }
+    @media print {
+      #lockScreen, header, .no-print, footer { display: none !important; }
+      body { background: #fff; }
+      .card { box-shadow: none; border: 1px solid #cbd5e1; }
+      .jogos-list { max-height: none; overflow: visible; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- TELA DE BLOQUEIO -->
+  <div id="lockScreen">
+    <div class="lock-card">
+      <div class="lock-icon" aria-hidden="true">🍀</div>
+      <h2>LotoFácil Matriz</h2>
+      <p>Digite a senha de acesso para utilizar o sistema de fechamentos.</p>
+      <input type="password" id="lockPassword" placeholder="Digite a senha" autocomplete="off" onkeydown="if(event.key==='Enter') tryUnlock()" />
+      <button type="button" onclick="tryUnlock()">🔓 Desbloquear</button>
+      <div id="lockError" class="lock-error" role="alert"></div>
+      <div class="lock-hint">Sistema Online • Fechamentos de Lotofácil</div>
+    </div>
+  </div>
+
+  <!-- SISTEMA PRINCIPAL -->
+  <div id="siteContent" class="hidden">
+    <header>
+      <div class="header-inner">
+        <div class="brand">
+          <h1>LotoFácil Matriz 🍀</h1>
+          <p>Fechamentos matemáticos fiéis às planilhas com conferidor integrado</p>
+        </div>
+        <div class="header-actions no-print">
+          <span class="badge-offline">🍀 Lotofácil (01–25)</span>
+          <button type="button" class="btn btn-outline" onclick="exportTxt()">📥 Baixar .TXT</button>
+          <button type="button" class="btn btn-outline" onclick="copyAllGames()">📋 Copiar Jogos</button>
+          <button type="button" class="btn btn-primary" onclick="window.print()">🖨️ Imprimir / PDF</button>
+          <button type="button" class="btn btn-outline" onclick="logoutSession()">Sair</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <!-- SEÇÃO ÚNICA: FECHAMENTO COM FIXAS -->
+      <section class="card no-print">
+        <div class="card-header">
+          <div>
+            <h2>🔧 Fechamento com Dezenas Fixas</h2>
+            <p>Escolha dezenas <strong>fixas</strong> (presentes em todos os jogos) e <strong>variáveis</strong> (combinadas).</p>
+          </div>
+        </div>
+        <div class="alert-info">
+          💡 <strong>Como funciona:</strong> marque as dezenas fixas (amarelo) clicando no volante. As demais serão variáveis. O sistema gera todos os jogos de 15 dezenas que contêm as fixas + subconjuntos das variáveis.
+        </div>
+        <div class="controls-row">
+          <div class="field">
+            <label>Dezenas Fixas Selecionadas</label>
+            <input type="text" id="fixasDisplay" value="nenhuma" readonly style="min-width:200px; background:#fef3c7;" />
+          </div>
+          <div class="field">
+            <label for="qtdFixas">Quantidade de Fixas Desejada</label>
+            <select id="qtdFixas" onchange="ajustarFixas()">
+              <option value="0">0 (nenhuma)</option>
+              <option value="6">6 fixas</option>
+              <option value="7">7 fixas</option>
+              <option value="8" selected>8 fixas</option>
+              <option value="9">9 fixas</option>
+              <option value="10">10 fixas</option>
+              <option value="11">11 fixas</option>
+              <option value="12">12 fixas</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="valorApostaFixas">Valor por Jogo (R$)</label>
+            <input type="number" id="valorApostaFixas" value="3.00" step="0.50" min="0" style="width:120px;" onchange="updateCustoFixas()" />
+          </div>
+          <button type="button" class="btn btn-success" onclick="gerarJogosFixas()">⚡ Gerar Jogos</button>
+          <button type="button" class="btn btn-outline" onclick="limparFixas()">🗑️ Limpar Fixas</button>
+        </div>
+        <div class="alert-warn" id="infoFixas">Marque as dezenas fixas clicando no volante abaixo. As dezenas em amarelo são fixas.</div>
+        <div id="gridDezenas" class="num-grid"></div>
+        <div class="summary-bar">
+          <div class="stat-pill">Dezenas Fixas: <strong id="countFixas">0</strong></div>
+          <div class="stat-pill">Dezenas Variáveis: <strong id="countVariaveis">25</strong></div>
+          <div class="stat-pill">Jogos Gerados: <strong id="countJogosFixas">0</strong></div>
+          <div class="stat-pill">Custo Total: <strong id="custoFixas">R$ 0,00</strong></div>
+        </div>
+      </section>
+
+      <!-- BOLÃO -->
+      <section class="card no-print">
+        <div class="card-header">
+          <div>
+            <h2>💰 Bolão — Dividir o Custo entre Pessoas</h2>
+            <p>Informe quantas pessoas vão participar e veja o valor por cota.</p>
+          </div>
+        </div>
+        <div class="controls-row">
+          <div class="field">
+            <label for="qtdPessoasBolao">Quantidade de Pessoas</label>
+            <input type="number" id="qtdPessoasBolao" value="5" min="2" max="100" style="width:100px;" onchange="calcularBolao()" />
+          </div>
+          <div class="field">
+            <label for="qtdCotasBolao">Cotas por Pessoa</label>
+            <input type="number" id="qtdCotasBolao" value="1" min="1" max="20" style="width:100px;" onchange="calcularBolao()" />
+          </div>
+          <button type="button" class="btn btn-primary" onclick="calcularBolao()">🔄 Calcular Bolão</button>
+          <button type="button" class="btn btn-outline" onclick="gerarCotasBolao()">📄 Gerar Lista de Cotas</button>
+        </div>
+        <div class="bolao-grid">
+          <div class="bolao-card">
+            <h4>Custo Total dos Jogos</h4>
+            <div class="valor" id="bolaoCustoTotal">R$ 0,00</div>
+            <div class="detalhe" id="bolaoDetalheJogos">0 jogos × R$ 0,00</div>
+          </div>
+          <div class="bolao-card">
+            <h4>Valor por Cota</h4>
+            <div class="valor" id="bolaoValorCota">R$ 0,00</div>
+            <div class="detalhe" id="bolaoDetalheCotas">0 cotas no total</div>
+          </div>
+          <div class="bolao-card">
+            <h4>Valor por Pessoa</h4>
+            <div class="valor" id="bolaoValorPessoa">R$ 0,00</div>
+            <div class="detalhe" id="bolaoDetalhePessoas">0 pessoas</div>
+          </div>
+        </div>
+        <div id="bolaoLista" class="hidden">
+          <h3 style="font-size:.95rem; color:var(--primary); margin-bottom:10px;">📄 Lista de Cotas</h3>
+          <div id="bolaoListaConteudo"></div>
+        </div>
+      </section>
+
+      <!-- CONFERIDOR -->
+      <section class="card no-print">
+        <div class="card-header">
+          <div>
+            <h2>Conferidor de Resultados</h2>
+            <p>Digite as 15 dezenas sorteadas separadas por espaço (ex: 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15).</p>
+          </div>
+        </div>
+        <div class="controls-row" style="margin-bottom:0;">
+          <div class="field" style="flex:1; min-width:280px;">
+            <label for="resultadoSorteio">Resultado do Sorteio (15 Dezenas)</label>
+            <input type="text" id="resultadoSorteio" placeholder="Ex: 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15" oninput="conferirJogos()" />
+          </div>
+          <button type="button" class="btn btn-dark" onclick="conferirJogos()">🎯 Conferir Jogos</button>
+        </div>
+        <div class="alert-warn" id="validaResultado" style="display:none;"></div>
+      </section>
+
+      <!-- JOGOS E RESUMO -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2>Volantes e Resumo de Prêmios</h2>
+            <p id="statusFechamento">Gere os jogos para começar...</p>
+          </div>
+        </div>
+
+        <div class="summary-bar">
+          <div class="stat-pill">Total de Cartões: <strong id="countJogos">0</strong></div>
+          <div class="stat-pill">Custo Total: <strong id="custoEstimado">R$ 0,00</strong></div>
+        </div>
+
+        <div class="conferidor-grid">
+          <div id="jogosContainer" class="jogos-list"></div>
+
+          <div>
+            <h3 style="font-size:.95rem; color:var(--primary); margin-bottom:10px;">📊 Tabela de Premiação</h3>
+            <table class="tabela-resumo">
+              <thead>
+                <tr><th>Faixa</th><th>Acertos</th><th>Cartões</th></tr>
+              </thead>
+              <tbody id="tabelaPremiacao">
+                <tr class="win-row"><td>15 acertos</td><td>15</td><td id="p15">0</td></tr>
+                <tr class="win-row"><td>14 acertos</td><td>14</td><td id="p14">0</td></tr>
+                <tr class="win-row"><td>13 acertos</td><td>13</td><td id="p13">0</td></tr>
+                <tr class="win-row"><td>12 acertos</td><td>12</td><td id="p12">0</td></tr>
+                <tr class="win-row"><td>11 acertos</td><td>11</td><td id="p11">0</td></tr>
+                <tr><td>10 acertos</td><td>10</td><td id="p10">0</td></tr>
+                <tr><td>9 acertos</td><td>9</td><td id="p9">0</td></tr>
+                <tr><td>8 acertos</td><td>8</td><td id="p8">0</td></tr>
+                <tr><td>7 acertos</td><td>7</td><td id="p7">0</td></tr>
+                <tr><td>6 acertos</td><td>6</td><td id="p6">0</td></tr>
+                <tr><td>5 acertos</td><td>5</td><td id="p5">0</td></tr>
+                <tr><td>4 acertos</td><td>4</td><td id="p4">0</td></tr>
+                <tr><td>3 acertos</td><td>3</td><td id="p3">0</td></tr>
+                <tr><td>2 acertos</td><td>2</td><td id="p2">0</td></tr>
+                <tr><td>1 acerto</td><td>1</td><td id="p1">0</td></tr>
+                <tr><td>0 acertos</td><td>0</td><td id="p0">0</td></tr>
+                <tr class="total-row"><td colspan="2">TOTAL DE CARTÕES</td><td id="pTotal">0</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="info-cologa" id="infoCologa">
+          <h4>📋 Sobre o Fechamento com Fixas</h4>
+          <ul>
+            <li>Você escolhe N dezenas <strong>fixas</strong> (presentes em todos os jogos) e as demais ficam <strong>variáveis</strong>.</li>
+            <li>O sistema gera <strong>todos</strong> os jogos de 15 dezenas que contêm as fixas + subconjuntos das variáveis.</li>
+            <li>Quanto mais fixas, menos jogos — mas maior o risco de errar uma fixa.</li>
+            <li>Fonte: lógica da planilha "LF-Garanta 14 pontos - 5 maneiras de fazer 14 pontos.xls".</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- OBSERVAÇÕES IMPORTANTES -->
+      <section class="card no-print">
+        <div class="card-header">
+          <div>
+            <h2>⚠️ Observações Importantes — Leia Antes de Apostar</h2>
+            <p>Informações sobre custos, riscos e limitações do sistema.</p>
+          </div>
+        </div>
+        <ul class="obs-list">
+          <li class="info">
+            <strong>💵 Custo real:</strong> cada jogo de 15 dezenas da Lotofácil custa <strong>R$ 3,00</strong> (valor oficial). O sistema calcula o custo total multiplicando o número de jogos pelo valor informado. <strong>Confira sempre o valor oficial antes de apostar.</strong>
+          </li>
+          <li>
+            <strong>🔧 Fechamento com fixas:</strong> não há garantia de prêmios. A lógica apenas cria combinações. Quanto mais fixas, menos jogos, mas maior o risco de errar uma fixa e perder tudo.
+          </li>
+          <li class="danger">
+            <strong>💸 Custo alto com muitas variáveis:</strong> 8 fixas + 17 variáveis geram <strong>C(17,7) = 19.448 jogos</strong> = <strong>R$ 58.344,00</strong>. NÃO é viável para a maioria. Recomendação: use <strong>13 ou 14 fixas</strong> (11 ou 66 jogos) ou jogue em <strong>bolão</strong>.
+          </li>
+          <li>
+            <strong>👥 Bolão:</strong> use a calculadora de bolão para dividir o custo. <strong>Atenção:</strong> se o bolão for oficial (Caixa), as regras de rateio são diferentes; esta calculadora serve apenas para <strong>organizar o grupo informalmente</strong>.
+          </li>
+          <li>
+            <strong>🎲 Loteria é jogo de azar:</strong> nenhum fechamento aumenta a chance de acertar 15 (1 em 3.268.760). O que os fechamentos fazem é organizar as apostas, mas <strong>não existe fórmula mágica para enriquecer</strong>.
+          </li>
+          <li class="danger">
+          <li class="ok">
+            <strong>✅ Sistema 100% online:</strong> após carregar, a página funciona sem internet. Nenhum dado é enviado a servidores. Tudo é processado no seu navegador.
+          </li>
+          <li>
+            <strong>📊 Valores de prêmios:</strong> os valores de 11, 12, 13, 14 e 15 acertos <strong>variam a cada concurso</strong> e dependem da arrecadação. O sistema <strong>não estima prêmios</strong> — apenas conta quantos jogos foram premiados em cada faixa.
+          </li>
+        </ul>
+      </section>
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer>
+      <p class="destaque">⚠️ AVISO IMPORTANTE</p>
+      <p>Este sistema trata-se de uma ferramenta de <strong>combinações matemáticas</strong>. Não existem garantias de ganhos ou prêmios. Jogos de loteria são jogos de azar e envolvem risco financeiro.</p>
+      <p>O uso deste site é permitido apenas para <strong>maiores de 18 anos</strong>. Jogue com responsabilidade.</p>
+      <p style="margin-top:12px; font-size:.75rem; opacity:.7;">LotoFácil Matriz © 2027 — Sistema 100% online</p>
+    </footer>
+  </div>
+
+  <script>
+  // ============================================================
+  // 1. AUTENTICAÇÃO
+  // ============================================================
+  const SENHA_ATUAL = "LOT2027FACIL";
+  const SESSION_KEY = "loto_facil_matriz_ok";
+  let sessaoMemoria = false;
+
+  function sessaoAtiva() {
+    try { return sessionStorage.getItem(SESSION_KEY) === "1"; }
+    catch (e) { return sessaoMemoria; }
+  }
+  function sessaoSalvar(ativa) {
+    sessaoMemoria = ativa;
+    try {
+      if (ativa) sessionStorage.setItem(SESSION_KEY, "1");
+      else sessionStorage.removeItem(SESSION_KEY);
+    } catch (e) { /* memória apenas */ }
+  }
+
+  function avisar(msg, erro = true) {
+    const el = document.getElementById("toast");
+    el.textContent = msg;
+    el.className = "toast show" + (erro ? " err" : "");
+    clearTimeout(avisar.t);
+    avisar.t = setTimeout(() => { el.className = "toast"; }, 4000);
+  }
+
+  function tryUnlock() {
+    const input = document.getElementById("lockPassword");
+    const error = document.getElementById("lockError");
+    if (input.value.trim() === SENHA_ATUAL) {
+      sessaoSalvar(true);
+      mostrarSite();
+    } else {
+      error.textContent = "❌ Senha incorreta. Tente novamente.";
+      input.value = "";
+      input.focus();
+    }
+  }
+
+  function mostrarSite() {
+    document.getElementById("lockScreen").classList.add("hidden");
+    document.getElementById("siteContent").classList.remove("hidden");
+    initApp();
+  }
+
+  function verificarSessao() { if (sessaoAtiva()) mostrarSite(); }
+  function logoutSession() { sessaoSalvar(false); location.reload(); }
+
+  // ============================================================
+  // 2. ESTADO
+  // ============================================================
+  let jogosGerados = [];
+  let dezenasFixas = new Set();
+  let isAppReady = false;
+  const TOTAL_LF = 25;
+  const DEZENAS_SORTEIO_LF = 15;
+  const TAM_JOGO_LF = 15;
+
+  // ============================================================
+  // 3. INICIALIZAÇÃO
+  // ============================================================
+  function initApp() {
+    if (isAppReady) return;
+    isAppReady = true;
+    renderGrid();
+    atualizarEstadoFixas();
+  }
+
+  function renderGrid() {
+    const grid = document.getElementById("gridDezenas");
+    if (!grid) return;
+    let html = "";
+    for (let i = 1; i <= TOTAL_LF; i++) {
+      const isFixed = dezenasFixas.has(i);
+      const cls = isFixed ? "dezena-btn fixed" : "dezena-btn";
+      html += `<button type="button" class="${cls}" onclick="toggleFixa(${i})">${fmtNum(i)}</button>`;
+    }
+    grid.innerHTML = html;
+  }
+
+  function toggleFixa(num) {
+    if (dezenasFixas.has(num)) {
+      dezenasFixas.delete(num);
+    } else {
+      if (dezenasFixas.size >= 12) {
+        avisar("Máximo de 12 dezenas fixas. Desmarque uma antes.");
+        return;
+      }
+      dezenasFixas.add(num);
+    }
+    renderGrid();
+    atualizarEstadoFixas();
+  }
+
+  function limparFixas() {
+    dezenasFixas.clear();
+    renderGrid();
+    atualizarEstadoFixas();
+  }
+
+  function ajustarFixas() {
+    const qtd = parseInt(document.getElementById("qtdFixas").value, 10) || 0;
+    if (qtd === 0) {
+      dezenasFixas.clear();
+    } else if (dezenasFixas.size < qtd) {
+      for (let i = 1; i <= TOTAL_LF && dezenasFixas.size < qtd; i++) {
+        if (!dezenasFixas.has(i)) dezenasFixas.add(i);
+      }
+    } else if (dezenasFixas.size > qtd) {
+      const arr = Array.from(dezenasFixas).sort((a, b) => b - a);
+      while (dezenasFixas.size > qtd && arr.length) {
+        dezenasFixas.delete(arr.shift());
+      }
+    }
+    renderGrid();
+    atualizarEstadoFixas();
+  }
+
+  function atualizarEstadoFixas() {
+    const fixasArr = Array.from(dezenasFixas).sort((a, b) => a - b);
+    document.getElementById("fixasDisplay").value = fixasArr.length ? fixasArr.map(fmtNum).join(" ") : "nenhuma";
+    document.getElementById("countFixas").textContent = fixasArr.length;
+    document.getElementById("countVariaveis").textContent = TOTAL_LF - fixasArr.length;
+    document.getElementById("qtdFixas").value = Math.min(fixasArr.length, 12);
+
+    const info = document.getElementById("infoFixas");
+    if (fixasArr.length === 0) {
+      info.textContent = "Marque as dezenas fixas clicando no volante. As dezenas em amarelo são fixas.";
+    } else if (fixasArr.length > 12) {
+      info.textContent = `⚠️ Máximo de 12 fixas. Você tem ${fixasArr.length}. Remova algumas.`;
+    } else {
+      const variaveis = TOTAL_LF - fixasArr.length;
+      const jogosNecessarios = combinacoes(variaveis, TAM_JOGO_LF - fixasArr.length);
+      info.textContent = `✅ ${fixasArr.length} fixas + ${variaveis} variáveis. Serão gerados ${jogosNecessarios} jogos (cada um com as ${fixasArr.length} fixas + ${TAM_JOGO_LF - fixasArr.length} variáveis).`;
+    }
+
+    jogosGerados = [];
+    updateCounters();
+    conferirJogos();
+    calcularBolao();
+  }
+
+  function combinacoes(n, k) {
+    if (k < 0 || k > n) return 0;
+    if (k === 0 || k === n) return 1;
+    k = Math.min(k, n - k);
+    let r = 1;
+    for (let i = 0; i < k; i++) r = r * (n - i) / (i + 1);
+    return Math.round(r);
+  }
+
+  function gerarJogosFixas() {
+    const fixasArr = Array.from(dezenasFixas).sort((a, b) => a - b);
+    if (fixasArr.length === 0) {
+      avisar("Marque pelo menos 1 dezena fixa.");
+      return;
+    }
+    if (fixasArr.length > 12) {
+      avisar("Máximo de 12 dezenas fixas.");
+      return;
+    }
+
+    const variaveis = [];
+    for (let i = 1; i <= TOTAL_LF; i++) {
+      if (!dezenasFixas.has(i)) variaveis.push(i);
+    }
+    const precisaVariaveis = TAM_JOGO_LF - fixasArr.length;
+
+    if (precisaVariaveis < 0) {
+      avisar("Muitas fixas: máximo 15 (tamanho do jogo).");
+      return;
+    }
+    if (precisaVariaveis === 0) {
+      jogosGerados = [fixasArr.slice()];
+    } else {
+      const combos = [];
+      (function rec(inicio, atual) {
+        if (atual.length === precisaVariaveis) {
+          combos.push(atual.slice());
+          return;
+        }
+        for (let i = inicio; i < variaveis.length; i++) {
+          atual.push(variaveis[i]);
+          rec(i + 1, atual);
+          atual.pop();
+        }
+      })(0, []);
+      jogosGerados = combos.map(combo => fixasArr.concat(combo).sort((a, b) => a - b));
+    }
+
+    document.getElementById("statusFechamento").textContent = `${jogosGerados.length} jogos gerados com ${fixasArr.length} fixas + ${precisaVariaveis} variáveis cada.`;
+    document.getElementById("countJogosFixas").textContent = jogosGerados.length;
+    updateCounters();
+    updateCustoFixas();
+    conferirJogos();
+    calcularBolao();
+    avisar(`${jogosGerados.length} jogos gerados!`, false);
+  }
+
+  function updateCustoFixas() {
+    const valor = parseFloat(document.getElementById("valorApostaFixas").value) || 0;
+    document.getElementById("custoFixas").textContent = (jogosGerados.length * valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    calcularBolao();
+  }
+
+  function updateCounters() {
+    document.getElementById("countJogos").textContent = jogosGerados.length;
+    document.getElementById("pTotal").textContent = jogosGerados.length;
+    const valor = parseFloat(document.getElementById("valorApostaFixas")?.value) || 0;
+    document.getElementById("custoEstimado").textContent = (jogosGerados.length * valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  }
+
+  function fmtNum(n) { return String(n).padStart(2, "0"); }
+
+  // ============================================================
+  // 4. CONFERIDOR
+  // ============================================================
+  function conferirJogos() {
+    const rawEl = document.getElementById("resultadoSorteio");
+    if (!rawEl) return;
+    const nums = rawEl.value.split(/[\s,;\/-]+/).map(s => parseInt(s.trim(), 10))
+                    .filter(n => !isNaN(n) && n >= 1 && n <= TOTAL_LF);
+    const unicos = Array.from(new Set(nums));
+    const sorteioSet = new Set(unicos.slice(0, DEZENAS_SORTEIO_LF));
+
+    const validaBox = document.getElementById("validaResultado");
+    if (sorteioSet.size > 0 && unicos.length !== sorteioSet.size) {
+      validaBox.style.display = "block";
+      validaBox.textContent = `⚠️ Há dezenas repetidas no resultado. Elas foram desconsideradas.`;
+    } else if (sorteioSet.size > 0 && sorteioSet.size !== DEZENAS_SORTEIO_LF) {
+      validaBox.style.display = "block";
+      validaBox.textContent = `⚠️ O resultado deve ter exatamente ${DEZENAS_SORTEIO_LF} dezenas (você informou ${sorteioSet.size}). O resumo abaixo é parcial.`;
+    } else {
+      validaBox.style.display = "none";
+    }
+
+    const contagem = {};
+    for (let i = 0; i <= 15; i++) contagem[i] = 0;
+
+    const avaliados = jogosGerados.map((jogo, idx) => {
+      const hits = jogo.filter(n => sorteioSet.has(n)).length;
+      if (sorteioSet.size > 0) contagem[hits]++;
+      return { numero: idx + 1, dezenas: jogo, hits, hasSorteio: sorteioSet.size > 0 };
+    });
+
+    for (let i = 0; i <= 15; i++) {
+      const el = document.getElementById(`p${i}`);
+      if (el) el.textContent = sorteioSet.size > 0 ? contagem[i] : 0;
+    }
+
+    renderJogos(avaliados);
+  }
+
+  function renderJogos(lista = null) {
+    const container = document.getElementById("jogosContainer");
+    if (!container) return;
+    const items = lista || jogosGerados.map((d, i) => ({ numero: i + 1, dezenas: d, hits: 0, hasSorteio: false }));
+    if (!items.length) {
+      container.innerHTML = `<p style="color:var(--muted); text-align:center; padding:20px;">Nenhum jogo gerado. Marque as fixas e clique em "Gerar Jogos".</p>`;
+      return;
+    }
+    container.innerHTML = items.map(item => {
+      const textoDezenas = item.dezenas.map(fmtNum).join(" - ");
+      let badge;
+      if (item.hasSorteio) {
+        const cls = item.hits >= 13 ? "hit-tag top" : (item.hits >= 11 ? "hit-tag win" : "hit-tag");
+        badge = `<span class="${cls}">${item.hits} acerto(s)</span>`;
+      } else {
+        badge = `<span class="hit-tag">Cartão #${item.numero}</span>`;
+      }
+      return `
+        <div class="jogo-item">
+          <div class="jogo-item-head">
+            <span class="jogo-numero">Jogo ${String(item.numero).padStart(2, "0")}</span>
+            ${badge}
+          </div>
+          <span class="jogo-dezenas">${textoDezenas}</span>
+        </div>
+      `;
+    }).join("");
+  }
+
+  // ============================================================
+  // 5. BOLÃO
+  // ============================================================
+  function calcularBolao() {
+    const qtdPessoas = Math.max(2, parseInt(document.getElementById("qtdPessoasBolao").value, 10) || 2);
+    const qtdCotas = Math.max(1, parseInt(document.getElementById("qtdCotasBolao").value, 10) || 1);
+    const valorJogo = parseFloat(document.getElementById("valorApostaFixas")?.value) || 3;
+    const totalJogos = jogosGerados.length;
+    const custoTotal = totalJogos * valorJogo;
+    const totalCotas = qtdPessoas * qtdCotas;
+    const valorPorCota = totalCotas > 0 ? custoTotal / totalCotas : 0;
+    const valorPorPessoa = valorPorCota * qtdCotas;
+
+    document.getElementById("bolaoCustoTotal").textContent = custoTotal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    document.getElementById("bolaoDetalheJogos").textContent = `${totalJogos} jogos × ${valorJogo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`;
+    document.getElementById("bolaoValorCota").textContent = valorPorCota.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    document.getElementById("bolaoDetalheCotas").textContent = `${totalCotas} cotas no total`;
+    document.getElementById("bolaoValorPessoa").textContent = valorPorPessoa.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    document.getElementById("bolaoDetalhePessoas").textContent = `${qtdPessoas} pessoas × ${qtdCotas} cota(s)`;
+  }
+
+  function gerarCotasBolao() {
+    const qtdPessoas = Math.max(2, parseInt(document.getElementById("qtdPessoasBolao").value, 10) || 2);
+    const qtdCotas = Math.max(1, parseInt(document.getElementById("qtdCotasBolao").value, 10) || 1);
+    const valorJogo = parseFloat(document.getElementById("valorApostaFixas")?.value) || 3;
+    const totalJogos = jogosGerados.length;
+    const custoTotal = totalJogos * valorJogo;
+    const totalCotas = qtdPessoas * qtdCotas;
+    const valorPorCota = totalCotas > 0 ? custoTotal / totalCotas : 0;
+
+    if (totalJogos === 0) {
+      avisar("Gere os jogos primeiro.");
+      return;
+    }
+
+    let html = `<div class="alert-info">Custo total: <strong>${custoTotal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</strong> • ${totalCotas} cotas • Valor por cota: <strong>${valorPorCota.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</strong></div>`;
+    html += `<table class="tabela-resumo" style="margin-top:10px;"><thead><tr><th>Pessoa</th><th>Cotas</th><th>Valor a Pagar</th></tr></thead><tbody>`;
+    for (let i = 1; i <= qtdPessoas; i++) {
+      const valorPessoa = valorPorCota * qtdCotas;
+      html += `<tr><td>Pessoa ${i}</td><td>${qtdCotas}</td><td><strong>${valorPessoa.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</strong></td></tr>`;
+    }
+    html += `<tr class="total-row"><td colspan="2">TOTAL</td><td>${custoTotal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td></tr>`;
+    html += `</tbody></table>`;
+    html += `<div class="alert-warn" style="margin-top:10px;">⚠️ Esta lista serve apenas para <strong>organização informal</strong> do grupo. Não é um bolão oficial da Caixa.</div>`;
+
+    document.getElementById("bolaoLista").classList.remove("hidden");
+    document.getElementById("bolaoListaConteudo").innerHTML = html;
+  }
+
+  // ============================================================
+  // 6. EXPORTAÇÃO
+  // ============================================================
+  function getTextoJogos() {
+    return jogosGerados.map((jogo, idx) => `Jogo ${String(idx + 1).padStart(2, "0")}: ${jogo.map(fmtNum).join(" - ")}`).join("\n");
+  }
+
+  function copyAllGames() {
+    if (!jogosGerados.length) return avisar("Gere os jogos primeiro.");
+    const texto = getTextoJogos();
+    const fallback = () => {
+      const ta = document.createElement("textarea");
+      ta.value = texto; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      let ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(ta);
+      avisar(ok ? "Todos os jogos foram copiados!" : "Não foi possível copiar. Use o botão Baixar .TXT.", !ok);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(texto).then(() => avisar("Todos os jogos foram copiados!", false)).catch(fallback);
+    } else {
+      fallback();
+    }
+  }
+
+  function exportTxt() {
+    if (!jogosGerados.length) return avisar("Gere os jogos primeiro.");
+    const blob = new Blob([getTextoJogos()], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "lotofacil-matriz.txt"; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  // ============================================================
+  // 7. BOOTSTRAP
+  // ============================================================
+  verificarSessao();
+  </script>
+</body>
+</html>
