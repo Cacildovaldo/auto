@@ -40,8 +40,6 @@
     .brand p { font-size: .78rem; color: #cbd5e1; }
     .header-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     .badge-offline { background: #7c2d12; border: 1px solid #fbbf24; color: #fef3c7; padding: 6px 13px; border-radius: 999px; font-size: .8rem; font-weight: 700; }
-    .badge-salvo { background: #065f46; border: 1px solid #34d399; color: #ecfdf5; padding: 6px 13px; border-radius: 999px; font-size: .8rem; font-weight: 700; cursor: pointer; transition: all .15s; }
-    .badge-salvo:hover { background: #047857; }
 
     /* Container e Cards */
     .container { max-width: 1240px; margin: 22px auto 50px; padding: 0 20px; display: flex; flex-direction: column; gap: 20px; flex: 1; }
@@ -116,15 +114,13 @@
     /* Alerta */
     .alert-info { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 10px 14px; border-radius: 9px; font-size: .82rem; margin-bottom: 12px; }
     .alert-warn { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; padding: 10px 14px; border-radius: 9px; font-size: .82rem; margin-bottom: 12px; }
-    .alert-success { background: #dcfce7; border: 1px solid #86efac; color: #166534; padding: 10px 14px; border-radius: 9px; font-size: .82rem; margin-bottom: 12px; }
 
-    /* Modal */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(11,37,69,.7); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 20000; }
-    .modal-box { background: #fff; border-radius: 14px; max-width: 600px; width: 100%; padding: 26px 28px; box-shadow: 0 25px 50px -12px rgba(0,0,0,.5); max-height: 90vh; overflow-y: auto; }
-    .modal-box h3 { color: var(--primary); font-size: 1.15rem; margin-bottom: 8px; font-weight: 800; }
-    .modal-box p { color: var(--text); font-size: .9rem; margin-bottom: 12px; }
-    .modal-box .codigo { background: #f1f5f9; border: 1.5px dashed var(--border); border-radius: 9px; padding: 12px; font-family: monospace; font-size: .8rem; word-break: break-all; margin: 10px 0; max-height: 120px; overflow-y: auto; }
-    .modal-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    /* Bolão */
+    .bolao-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .bolao-card { background: #f8fafc; border: 1px solid var(--border-light); border-radius: 10px; padding: 14px; text-align: center; }
+    .bolao-card h4 { font-size: .8rem; color: var(--muted); font-weight: 700; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
+    .bolao-card .valor { font-size: 1.3rem; font-weight: 800; color: var(--primary); }
+    .bolao-card .detalhe { font-size: .75rem; color: var(--muted); margin-top: 4px; }
 
     /* Observações */
     .obs-list { list-style: none; padding: 0; }
@@ -156,21 +152,7 @@
 <body>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-  <!-- MODAL DE RECUPERAÇÃO -->
-  <div id="modalOverlay" class="modal-overlay hidden">
-    <div class="modal-box">
-      <h3>💾 Meus Jogos Salvos</h3>
-      <p>Aqui estão os jogos que você gerou anteriormente neste navegador. Você pode carregá-los, baixar o arquivo .TXT ou copiar o código de recuperação.</p>
-      <div id="modalConteudo"></div>
-      <div class="modal-actions">
-        <button type="button" class="btn btn-success" onclick="carregarJogosSalvos()">📂 Carregar Jogos</button>
-        <button type="button" class="btn btn-primary" onclick="exportarJogosSalvos()">📥 Baixar .TXT</button>
-        <button type="button" class="btn btn-outline" onclick="copiarCodigoSalvo()">📋 Copiar Código</button>
-        <button type="button" class="btn btn-dark" onclick="fecharModal()">Fechar</button>
-      </div>
-    </div>
-  </div>
+  <input type="file" id="importTxtInput" accept=".txt,text/plain" class="hidden" onchange="handleImportTxt(event)" />
 
   <!-- TELA DE BLOQUEIO -->
   <div id="lockScreen">
@@ -195,8 +177,7 @@
         </div>
         <div class="header-actions no-print">
           <span class="badge-offline">🍀 Lotofácil (01–25)</span>
-          <span class="badge-salvo hidden" id="badgeSalvo" onclick="abrirModal()">💾 Meus Jogos Salvos</span>
-          <button type="button" class="btn btn-outline" onclick="abrirModal()">💾 Recuperar</button>
+          <button type="button" class="btn btn-outline" onclick="triggerImportTxt()">📂 Importar .TXT</button>
           <button type="button" class="btn btn-outline" onclick="exportTxt()">📥 Baixar .TXT</button>
           <button type="button" class="btn btn-outline" onclick="copyAllGames()">📋 Copiar Jogos</button>
           <button type="button" class="btn btn-primary" onclick="window.print()">🖨️ Imprimir / PDF</button>
@@ -215,7 +196,7 @@
           </div>
         </div>
         <div class="alert-info">
-          💡 <strong>Como funciona:</strong> marque as dezenas fixas (amarelo) clicando no volante. As demais serão variáveis. O sistema gera todos os jogos de 15 dezenas que contêm as fixas + subconjuntos das variáveis.
+          💡 <strong>Como funciona:</strong> marque as dezenas fixas (amarelo) clicando no volante. As demais serão variáveis. O sistema gera todos os jogos de 15 dezenas que contêm as fixas + subconjuntos das variáveis. Seus jogos ficam salvos neste navegador para conferir depois.
         </div>
         <div class="controls-row">
           <div class="field">
@@ -233,13 +214,11 @@
               <option value="10">10 fixas</option>
               <option value="11">11 fixas</option>
               <option value="12">12 fixas</option>
-              <option value="13">13 fixas</option>
-              <option value="14">14 fixas</option>
             </select>
           </div>
           <div class="field">
             <label for="valorApostaFixas">Valor por Jogo (R$)</label>
-            <input type="number" id="valorApostaFixas" value="3.00" step="0.50" min="0" style="width:120px;" onchange="updateCustoFixas()" />
+            <input type="number" id="valorApostaFixas" value="3.50" step="0.50" min="0" style="width:120px;" onchange="updateCustoFixas()" />
           </div>
           <button type="button" class="btn btn-success" onclick="gerarJogosFixas()">⚡ Gerar Jogos</button>
           <button type="button" class="btn btn-outline" onclick="limparFixas()">🗑️ Limpar Fixas</button>
@@ -265,11 +244,11 @@
         <div class="controls-row">
           <div class="field">
             <label for="qtdPessoasBolao">Quantidade de Pessoas</label>
-            <input type="number" id="qtdPessoasBolao" value="5" min="2" max="100" style="width:100px;" onchange="calcularBolao()" />
+            <input type="number" id="qtdPessoasBolao" value="5" min="2" max="100" style="width:100px;" onchange="calcularBolao(); salvarEstado();" />
           </div>
           <div class="field">
             <label for="qtdCotasBolao">Cotas por Pessoa</label>
-            <input type="number" id="qtdCotasBolao" value="1" min="1" max="20" style="width:100px;" onchange="calcularBolao()" />
+            <input type="number" id="qtdCotasBolao" value="1" min="1" max="20" style="width:100px;" onchange="calcularBolao(); salvarEstado();" />
           </div>
           <button type="button" class="btn btn-primary" onclick="calcularBolao()">🔄 Calcular Bolão</button>
           <button type="button" class="btn btn-outline" onclick="gerarCotasBolao()">📄 Gerar Lista de Cotas</button>
@@ -308,9 +287,9 @@
         <div class="controls-row" style="margin-bottom:0;">
           <div class="field" style="flex:1; min-width:280px;">
             <label for="resultadoSorteio">Resultado do Sorteio (15 Dezenas)</label>
-            <input type="text" id="resultadoSorteio" placeholder="Ex: 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15" oninput="conferirJogos()" />
+            <input type="text" id="resultadoSorteio" placeholder="Ex: 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15" oninput="conferirJogos(); salvarEstado();" />
           </div>
-          <button type="button" class="btn btn-dark" onclick="conferirJogos()">🎯 Conferir Jogos</button>
+          <button type="button" class="btn btn-dark" onclick="conferirJogos(); salvarEstado();">🎯 Conferir Jogos</button>
         </div>
         <div class="alert-warn" id="validaResultado" style="display:none;"></div>
       </section>
@@ -381,17 +360,14 @@
           </div>
         </div>
         <ul class="obs-list">
-          <li class="ok">
-            <strong>💾 Seus jogos são salvos automaticamente:</strong> ao gerar os jogos, eles ficam salvos neste navegador. Se você fechar a página, recarregar ou desligar o computador, ao voltar eles estarão aqui. <strong>Mas se você trocar de navegador, limpar o cache ou usar outro dispositivo, use o botão "💾 Recuperar" ou o arquivo .TXT.</strong>
-          </li>
           <li class="info">
-            <strong>💵 Custo real:</strong> cada jogo de 15 dezenas da Lotofácil custa <strong>R$ 3,00</strong> (valor oficial). O sistema calcula o custo total multiplicando o número de jogos pelo valor informado. <strong>Confira sempre o valor oficial antes de apostar.</strong>
+            <strong>💵 Custo real:</strong> cada jogo simples de 15 dezenas da Lotofácil custa <strong>R$ 3,50</strong> (valor de referência). O sistema calcula o custo total multiplicando o número de jogos pelo valor informado. <strong>Confira sempre o valor oficial vigente antes de apostar.</strong>
           </li>
           <li>
             <strong>🔧 Fechamento com fixas:</strong> não há garantia de prêmios. A lógica apenas cria combinações. Quanto mais fixas, menos jogos, mas maior o risco de errar uma fixa e perder tudo.
           </li>
           <li class="danger">
-            <strong>💸 Custo alto com muitas variáveis:</strong> 8 fixas + 17 variáveis geram <strong>C(17,7) = 19.448 jogos</strong> = <strong>R$ 58.344,00</strong>. NÃO é viável para a maioria. Recomendação: use <strong>13 ou 14 fixas</strong> (11 ou 66 jogos) ou jogue em <strong>bolão</strong>.
+            <strong>💸 Custo alto com muitas variáveis:</strong> 8 fixas + 17 variáveis geram <strong>C(17,7) = 19.448 jogos</strong> = <strong>R$ 68.068,00</strong> (a R$ 3,50 cada). NÃO é viável para a maioria. Recomendação: use <strong>13 ou 14 fixas</strong> (11 ou 66 jogos) ou jogue em <strong>bolão</strong>.
           </li>
           <li>
             <strong>👥 Bolão:</strong> use a calculadora de bolão para dividir o custo. <strong>Atenção:</strong> se o bolão for oficial (Caixa), as regras de rateio são diferentes; esta calculadora serve apenas para <strong>organizar o grupo informalmente</strong>.
@@ -400,7 +376,7 @@
             <strong>🎲 Loteria é jogo de azar:</strong> nenhum fechamento aumenta a chance de acertar 15 (1 em 3.268.760). O que os fechamentos fazem é organizar as apostas, mas <strong>não existe fórmula mágica para enriquecer</strong>.
           </li>
           <li class="ok">
-            <strong>🌐 Sistema 100% online:</strong> a página funciona via internet, hospedada em um servidor seguro. Certifique-se de estar conectado para acessar e gerar seus jogos.
+            <strong>✅ Salvamento local automático:</strong> os jogos gerados, dezenas fixas e resultado digitado ficam salvos no armazenamento local deste navegador para você conferir depois, sem envio de dados a servidores externos.
           </li>
           <li>
             <strong>📊 Valores de prêmios:</strong> os valores de 11, 12, 13, 14 e 15 acertos <strong>variam a cada concurso</strong> e dependem da arrecadação. O sistema <strong>não estima prêmios</strong> — apenas conta quantos jogos foram premiados em cada faixa.
@@ -414,18 +390,19 @@
       <p class="destaque">⚠️ AVISO IMPORTANTE</p>
       <p>Este sistema trata-se de uma ferramenta de <strong>combinações matemáticas</strong>. Não existem garantias de ganhos ou prêmios. Jogos de loteria são jogos de azar e envolvem risco financeiro.</p>
       <p>O uso deste site é permitido apenas para <strong>maiores de 18 anos</strong>. Jogue com responsabilidade.</p>
-      <p style="margin-top:12px; font-size:.75rem; opacity:.7;">LotoFácil Matriz © 2025 — Sistema 100% online</p>
+      <p style="margin-top:12px; font-size:.75rem; opacity:.7;">LotoFácil Matriz © 2027 — Sistema 100% online</p>
     </footer>
   </div>
 
   <script>
   // ============================================================
-  // 1. AUTENTICAÇÃO
+  // 1. AUTENTICAÇÃO E PERSISTÊNCIA LOCAL
   // ============================================================
   const SENHA_ATUAL = "LOT2027FACIL";
   const SESSION_KEY = "loto_facil_matriz_ok";
-  const STORAGE_KEY = "loto_facil_jogos_salvos";
+  const STORAGE_STATE_KEY = "loto_facil_matriz_state_v1";
   let sessaoMemoria = false;
+  let estadoMemoria = null;
 
   function sessaoAtiva() {
     try { return sessionStorage.getItem(SESSION_KEY) === "1"; }
@@ -437,6 +414,67 @@
       if (ativa) sessionStorage.setItem(SESSION_KEY, "1");
       else sessionStorage.removeItem(SESSION_KEY);
     } catch (e) { /* memória apenas */ }
+  }
+
+  function salvarEstado() {
+    if (!isAppReady) return;
+    const payload = {
+      jogosGerados,
+      dezenasFixas: Array.from(dezenasFixas),
+      resultadoSorteio: document.getElementById("resultadoSorteio")?.value || "",
+      valorApostaFixas: document.getElementById("valorApostaFixas")?.value ?? "3.50",
+      qtdPessoasBolao: document.getElementById("qtdPessoasBolao")?.value ?? "5",
+      qtdCotasBolao: document.getElementById("qtdCotasBolao")?.value ?? "1",
+      statusFechamento: document.getElementById("statusFechamento")?.textContent || "Gere os jogos para começar...",
+      updatedAt: Date.now()
+    };
+    estadoMemoria = payload;
+    try {
+      localStorage.setItem(STORAGE_STATE_KEY, JSON.stringify(payload));
+    } catch (e) { /* fallback em memória se localStorage estiver cheio ou bloqueado */ }
+  }
+
+  function carregarEstado() {
+    let raw = null;
+    try {
+      const str = localStorage.getItem(STORAGE_STATE_KEY);
+      if (str) raw = JSON.parse(str);
+    } catch (e) { /* ignora */ }
+    if (!raw && estadoMemoria) raw = estadoMemoria;
+    if (!raw || typeof raw !== "object") return false;
+
+    if (Array.isArray(raw.dezenasFixas)) {
+      dezenasFixas = new Set(
+        raw.dezenasFixas
+          .map(n => parseInt(n, 10))
+          .filter(n => !isNaN(n) && n >= 1 && n <= TOTAL_LF)
+          .slice(0, 12)
+      );
+    }
+
+    if (Array.isArray(raw.jogosGerados)) {
+      jogosGerados = raw.jogosGerados
+        .filter(j => Array.isArray(j) && j.length === TAM_JOGO_LF)
+        .map(j => j.map(n => parseInt(n, 10)).filter(n => !isNaN(n) && n >= 1 && n <= TOTAL_LF).sort((a, b) => a - b))
+        .filter(j => j.length === TAM_JOGO_LF);
+    }
+
+    if (raw.valorApostaFixas !== undefined && document.getElementById("valorApostaFixas")) {
+      document.getElementById("valorApostaFixas").value = raw.valorApostaFixas;
+    }
+    if (raw.qtdPessoasBolao !== undefined && document.getElementById("qtdPessoasBolao")) {
+      document.getElementById("qtdPessoasBolao").value = raw.qtdPessoasBolao;
+    }
+    if (raw.qtdCotasBolao !== undefined && document.getElementById("qtdCotasBolao")) {
+      document.getElementById("qtdCotasBolao").value = raw.qtdCotasBolao;
+    }
+    if (typeof raw.resultadoSorteio === "string" && document.getElementById("resultadoSorteio")) {
+      document.getElementById("resultadoSorteio").value = raw.resultadoSorteio;
+    }
+    if (typeof raw.statusFechamento === "string" && document.getElementById("statusFechamento")) {
+      document.getElementById("statusFechamento").textContent = raw.statusFechamento;
+    }
+    return true;
   }
 
   function avisar(msg, erro = true) {
@@ -467,92 +505,41 @@
   }
 
   function verificarSessao() { if (sessaoAtiva()) mostrarSite(); }
-  function logoutSession() { sessaoSalvar(false); location.reload(); }
-
-  // ============================================================
-  // 2. PERSISTÊNCIA (localStorage com fallback em memória)
-  // ============================================================
-  let storageMemoria = null;
-
-  function storageDisponivel() {
-    try {
-      const k = "__test__";
-      localStorage.setItem(k, "1");
-      localStorage.removeItem(k);
-      return true;
-    } catch (e) { return false; }
-  }
-  const STORAGE_OK = storageDisponivel();
-
-  function salvarJogos(dados) {
-    if (STORAGE_OK) {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(dados)); return true; }
-      catch (e) { /* quota cheia, cai no fallback */ }
-    }
-    storageMemoria = dados;
-    return false;
-  }
-
-  function carregarJogosSalvosStorage() {
-    if (STORAGE_OK) {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) return JSON.parse(raw);
-      } catch (e) {}
-    }
-    return storageMemoria;
-  }
-
-  function limparJogosSalvosStorage() {
-    if (STORAGE_OK) {
-      try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
-    }
-    storageMemoria = null;
+  function logoutSession() {
+    salvarEstado();
+    sessaoSalvar(false);
+    location.reload();
   }
 
   // ============================================================
-  // 3. ESTADO
+  // 2. ESTADO
   // ============================================================
   let jogosGerados = [];
   let dezenasFixas = new Set();
   let isAppReady = false;
-  let dadosSalvos = null;
   const TOTAL_LF = 25;
   const DEZENAS_SORTEIO_LF = 15;
   const TAM_JOGO_LF = 15;
 
   // ============================================================
-  // 4. INICIALIZAÇÃO
+  // 3. INICIALIZAÇÃO
   // ============================================================
   function initApp() {
     if (isAppReady) return;
     isAppReady = true;
+    const restaurou = carregarEstado();
     renderGrid();
-    atualizarEstadoFixas();
-
-    // Carrega jogos salvos automaticamente
-    dadosSalvos = carregarJogosSalvosStorage();
-    if (dadosSalvos && dadosSalvos.jogos && dadosSalvos.jogos.length > 0) {
-      jogosGerados = dadosSalvos.jogos;
-      document.getElementById("badgeSalvo").classList.remove("hidden");
-      document.getElementById("statusFechamento").textContent =
-        `💾 ${jogosGerados.length} jogos carregados da sessão anterior (salvos em ${formatarData(dadosSalvos.data)}).`;
-      updateCounters();
-      conferirJogos();
-      avisar(`${jogosGerados.length} jogos restaurados da sessão anterior!`, false);
+    sincronizarResumoFixas();
+    document.getElementById("countJogosFixas").textContent = jogosGerados.length;
+    updateCounters();
+    updateCustoFixas();
+    conferirJogos();
+    calcularBolao();
+    if (restaurou && jogosGerados.length > 0) {
+      avisar(`${jogosGerados.length} jogo(s) restaurado(s) do navegador.`, false);
     }
   }
 
-  function formatarData(iso) {
-    try {
-      const d = new Date(iso);
-      return d.toLocaleString("pt-BR");
-    } catch (e) { return "data desconhecida"; }
-  }
-
-  // ============================================================
-  // 5. GRID E FIXAS
-  // ============================================================
   function renderGrid() {
     const grid = document.getElementById("gridDezenas");
     if (!grid) return;
@@ -569,8 +556,8 @@
     if (dezenasFixas.has(num)) {
       dezenasFixas.delete(num);
     } else {
-      if (dezenasFixas.size >= 14) {
-        avisar("Máximo de 14 dezenas fixas. Desmarque uma antes.");
+      if (dezenasFixas.size >= 12) {
+        avisar("Máximo de 12 dezenas fixas. Desmarque uma antes.");
         return;
       }
       dezenasFixas.add(num);
@@ -603,23 +590,34 @@
     atualizarEstadoFixas();
   }
 
-  function atualizarEstadoFixas() {
+  function sincronizarResumoFixas() {
     const fixasArr = Array.from(dezenasFixas).sort((a, b) => a - b);
     document.getElementById("fixasDisplay").value = fixasArr.length ? fixasArr.map(fmtNum).join(" ") : "nenhuma";
     document.getElementById("countFixas").textContent = fixasArr.length;
     document.getElementById("countVariaveis").textContent = TOTAL_LF - fixasArr.length;
-    document.getElementById("qtdFixas").value = Math.min(fixasArr.length, 14);
+    document.getElementById("qtdFixas").value = Math.min(fixasArr.length, 12);
 
     const info = document.getElementById("infoFixas");
     if (fixasArr.length === 0) {
       info.textContent = "Marque as dezenas fixas clicando no volante. As dezenas em amarelo são fixas.";
-    } else if (fixasArr.length > 14) {
-      info.textContent = `⚠️ Máximo de 14 fixas. Você tem ${fixasArr.length}. Remova algumas.`;
+    } else if (fixasArr.length > 12) {
+      info.textContent = `⚠️ Máximo de 12 fixas. Você tem ${fixasArr.length}. Remova algumas.`;
     } else {
       const variaveis = TOTAL_LF - fixasArr.length;
       const jogosNecessarios = combinacoes(variaveis, TAM_JOGO_LF - fixasArr.length);
       info.textContent = `✅ ${fixasArr.length} fixas + ${variaveis} variáveis. Serão gerados ${jogosNecessarios} jogos (cada um com as ${fixasArr.length} fixas + ${TAM_JOGO_LF - fixasArr.length} variáveis).`;
     }
+  }
+
+  function atualizarEstadoFixas() {
+    sincronizarResumoFixas();
+    jogosGerados = [];
+    document.getElementById("countJogosFixas").textContent = 0;
+    document.getElementById("statusFechamento").textContent = "Gere os jogos para começar...";
+    updateCounters();
+    conferirJogos();
+    calcularBolao();
+    salvarEstado();
   }
 
   function combinacoes(n, k) {
@@ -631,17 +629,14 @@
     return Math.round(r);
   }
 
-  // ============================================================
-  // 6. GERAÇÃO E SALVAMENTO AUTOMÁTICO
-  // ============================================================
   function gerarJogosFixas() {
     const fixasArr = Array.from(dezenasFixas).sort((a, b) => a - b);
     if (fixasArr.length === 0) {
       avisar("Marque pelo menos 1 dezena fixa.");
       return;
     }
-    if (fixasArr.length > 14) {
-      avisar("Máximo de 14 dezenas fixas.");
+    if (fixasArr.length > 12) {
+      avisar("Máximo de 12 dezenas fixas.");
       return;
     }
 
@@ -673,44 +668,21 @@
       jogosGerados = combos.map(combo => fixasArr.concat(combo).sort((a, b) => a - b));
     }
 
-    // ===== SALVA AUTOMATICAMENTE =====
-    const dadosParaSalvar = {
-      jogos: jogosGerados,
-      fixas: fixasArr,
-      data: new Date().toISOString(),
-      valorJogo: parseFloat(document.getElementById("valorApostaFixas").value) || 3
-    };
-    const salvou = salvarJogos(dadosParaSalvar);
-    dadosSalvos = dadosParaSalvar;
-    document.getElementById("badgeSalvo").classList.remove("hidden");
-
-    document.getElementById("statusFechamento").textContent =
-      `${jogosGerados.length} jogos gerados com ${fixasArr.length} fixas + ${precisaVariaveis} variáveis cada.` +
-      (salvou ? " ✅ Salvos automaticamente." : " ⚠️ Salvos apenas na memória (localStorage indisponível).");
+    document.getElementById("statusFechamento").textContent = `${jogosGerados.length} jogos gerados com ${fixasArr.length} fixas + ${precisaVariaveis} variáveis cada.`;
     document.getElementById("countJogosFixas").textContent = jogosGerados.length;
     updateCounters();
     updateCustoFixas();
     conferirJogos();
     calcularBolao();
-
-    // Aviso importante sobre persistência
-    avisar(
-      `✅ ${jogosGerados.length} jogos gerados e salvos! ` +
-      `Se fechar a página, ao voltar eles estarão aqui. ` +
-      `Se trocar de dispositivo, use "Baixar .TXT" ou "Recuperar".`,
-      false
-    );
-
-    // Abre o modal automaticamente na primeira vez (para forçar exportação)
-    if (!localStorage.getItem("loto_facil_ja_exportou")) {
-      setTimeout(() => abrirModal(), 1500);
-    }
+    salvarEstado();
+    avisar(`${jogosGerados.length} jogos gerados e salvos neste navegador!`, false);
   }
 
   function updateCustoFixas() {
     const valor = parseFloat(document.getElementById("valorApostaFixas").value) || 0;
     document.getElementById("custoFixas").textContent = (jogosGerados.length * valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
     calcularBolao();
+    salvarEstado();
   }
 
   function updateCounters() {
@@ -723,7 +695,7 @@
   function fmtNum(n) { return String(n).padStart(2, "0"); }
 
   // ============================================================
-  // 7. CONFERIDOR
+  // 4. CONFERIDOR
   // ============================================================
   function conferirJogos() {
     const rawEl = document.getElementById("resultadoSorteio");
@@ -791,12 +763,12 @@
   }
 
   // ============================================================
-  // 8. BOLÃO
+  // 5. BOLÃO
   // ============================================================
   function calcularBolao() {
     const qtdPessoas = Math.max(2, parseInt(document.getElementById("qtdPessoasBolao").value, 10) || 2);
     const qtdCotas = Math.max(1, parseInt(document.getElementById("qtdCotasBolao").value, 10) || 1);
-    const valorJogo = parseFloat(document.getElementById("valorApostaFixas")?.value) || 3;
+    const valorJogo = parseFloat(document.getElementById("valorApostaFixas")?.value) || 3.5;
     const totalJogos = jogosGerados.length;
     const custoTotal = totalJogos * valorJogo;
     const totalCotas = qtdPessoas * qtdCotas;
@@ -814,7 +786,7 @@
   function gerarCotasBolao() {
     const qtdPessoas = Math.max(2, parseInt(document.getElementById("qtdPessoasBolao").value, 10) || 2);
     const qtdCotas = Math.max(1, parseInt(document.getElementById("qtdCotasBolao").value, 10) || 1);
-    const valorJogo = parseFloat(document.getElementById("valorApostaFixas")?.value) || 3;
+    const valorJogo = parseFloat(document.getElementById("valorApostaFixas")?.value) || 3.5;
     const totalJogos = jogosGerados.length;
     const custoTotal = totalJogos * valorJogo;
     const totalCotas = qtdPessoas * qtdCotas;
@@ -840,125 +812,53 @@
   }
 
   // ============================================================
-  // 9. MODAL DE RECUPERAÇÃO
-  // ============================================================
-  function abrirModal() {
-    const dados = carregarJogosSalvosStorage();
-    const conteudo = document.getElementById("modalConteudo");
-
-    if (!dados || !dados.jogos || dados.jogos.length === 0) {
-      conteudo.innerHTML = `<div class="alert-warn">Nenhum jogo salvo neste navegador. Gere jogos primeiro ou cole um código de recuperação abaixo.</div>
-        <div class="field"><label>Código de Recuperação (cole aqui)</label>
-        <input type="text" id="inputCodigoRecuperacao" placeholder="Cole o código que você copiou anteriormente..." style="width:100%;" /></div>
-        <button type="button" class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="importarCodigo()">📥 Importar Código</button>`;
-    } else {
-      let html = `<div class="alert-success">✅ ${dados.jogos.length} jogo(s) salvo(s) em ${formatarData(dados.data)}.</div>`;
-      html += `<p><strong>Fixas:</strong> ${dados.fixas ? dados.fixas.map(fmtNum).join(" ") : "não registradas"}</p>`;
-      html += `<p><strong>Primeiros jogos:</strong></p>`;
-      html += `<div class="codigo">`;
-      dados.jogos.slice(0, 5).forEach((j, i) => {
-        html += `Jogo ${String(i + 1).padStart(2, "0")}: ${j.map(fmtNum).join(" - ")}<br>`;
-      });
-      if (dados.jogos.length > 5) html += `... e mais ${dados.jogos.length - 5} jogo(s)<br>`;
-      html += `</div>`;
-      html += `<p style="font-size:.8rem; color:var(--muted);">💡 <strong>Código de recuperação (para outro dispositivo):</strong> copie o texto abaixo e guarde. Para usar em outro navegador, cole na tela de recuperação.</p>`;
-      html += `<div class="codigo" id="codigoRecuperacao">${btoa(JSON.stringify(dados)).slice(0, 200)}...</div>`;
-      html += `<button type="button" class="btn btn-outline btn-sm" onclick="copiarCodigoSalvo()">📋 Copiar Código Completo</button>`;
-      conteudo.innerHTML = html;
-    }
-
-    document.getElementById("modalOverlay").classList.remove("hidden");
-  }
-
-  function fecharModal() {
-    document.getElementById("modalOverlay").classList.add("hidden");
-  }
-
-  function carregarJogosSalvos() {
-    const dados = carregarJogosSalvosStorage();
-    if (!dados || !dados.jogos || dados.jogos.length === 0) {
-      avisar("Nenhum jogo salvo.");
-      return;
-    }
-    jogosGerados = dados.jogos;
-    if (dados.fixas) {
-      dezenasFixas = new Set(dados.fixas);
-      renderGrid();
-      atualizarEstadoFixas();
-    }
-    if (dados.valorJogo) {
-      document.getElementById("valorApostaFixas").value = dados.valorJogo;
-    }
-    document.getElementById("statusFechamento").textContent =
-      `💾 ${jogosGerados.length} jogos carregados da sessão anterior (${formatarData(dados.data)}).`;
-    updateCounters();
-    conferirJogos();
-    calcularBolao();
-    fecharModal();
-    avisar(`${jogosGerados.length} jogos carregados!`, false);
-  }
-
-  function exportarJogosSalvos() {
-    const dados = carregarJogosSalvosStorage();
-    if (!dados || !dados.jogos) { avisar("Nenhum jogo salvo."); return; }
-    const texto = dados.jogos.map((j, i) => `Jogo ${String(i + 1).padStart(2, "0")}: ${j.map(fmtNum).join(" - ")}`).join("\n");
-    const blob = new Blob([texto], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = `lotofacil-jogos-${Date.now()}.txt`; a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    try { localStorage.setItem("loto_facil_ja_exportou", "1"); } catch (e) {}
-  }
-
-  function copiarCodigoSalvo() {
-    const dados = carregarJogosSalvosStorage();
-    if (!dados) { avisar("Nenhum jogo salvo."); return; }
-    const codigo = btoa(JSON.stringify(dados));
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(codigo).then(() => avisar("Código copiado! Cole em outro dispositivo para recuperar.", false))
-        .catch(() => avisar("Não foi possível copiar. Tente manualmente.", true));
-    } else {
-      const ta = document.createElement("textarea");
-      ta.value = codigo; document.body.appendChild(ta); ta.select();
-      try { document.execCommand("copy"); avisar("Código copiado!", false); }
-      catch (e) { avisar("Não foi possível copiar.", true); }
-      document.body.removeChild(ta);
-    }
-    try { localStorage.setItem("loto_facil_ja_exportou", "1"); } catch (e) {}
-  }
-
-  function importarCodigo() {
-    const input = document.getElementById("inputCodigoRecuperacao");
-    if (!input || !input.value.trim()) { avisar("Cole um código válido."); return; }
-    try {
-      const dados = JSON.parse(atob(input.value.trim()));
-      if (!dados.jogos || !Array.isArray(dados.jogos)) throw new Error("Formato inválido");
-      jogosGerados = dados.jogos;
-      if (dados.fixas) {
-        dezenasFixas = new Set(dados.fixas);
-        renderGrid();
-        atualizarEstadoFixas();
-      }
-      if (dados.valorJogo) {
-        document.getElementById("valorApostaFixas").value = dados.valorJogo;
-      }
-      document.getElementById("statusFechamento").textContent =
-        `📥 ${jogosGerados.length} jogos importados de código.`;
-      updateCounters();
-      conferirJogos();
-      calcularBolao();
-      fecharModal();
-      avisar(`${jogosGerados.length} jogos importados com sucesso!`, false);
-    } catch (e) {
-      avisar("Código inválido. Verifique se copiou corretamente.", true);
-    }
-  }
-
-  // ============================================================
-  // 10. EXPORTAÇÃO
+  // 6. EXPORTAÇÃO E IMPORTAÇÃO
   // ============================================================
   function getTextoJogos() {
     return jogosGerados.map((jogo, idx) => `Jogo ${String(idx + 1).padStart(2, "0")}: ${jogo.map(fmtNum).join(" - ")}`).join("\n");
+  }
+
+  function triggerImportTxt() {
+    document.getElementById("importTxtInput")?.click();
+  }
+
+  function handleImportTxt(event) {
+    const file = event.target?.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const content = String(e.target?.result || "");
+      const linhas = content.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      const importados = [];
+
+      for (const linha of linhas) {
+        const semPrefixo = linha.replace(/^jogo\s*\d+\s*:\s*/i, "");
+        const nums = semPrefixo
+          .split(/[\s,;\/-]+/)
+          .map(s => parseInt(s.trim(), 10))
+          .filter(n => !isNaN(n) && n >= 1 && n <= TOTAL_LF);
+        const unicos = Array.from(new Set(nums)).sort((a, b) => a - b);
+        if (unicos.length === TAM_JOGO_LF) {
+          importados.push(unicos);
+        }
+      }
+
+      if (!importados.length) {
+        avisar("Nenhum jogo válido de 15 dezenas encontrado no arquivo .TXT.");
+      } else {
+        jogosGerados = importados;
+        document.getElementById("statusFechamento").textContent = `${jogosGerados.length} jogos importados do arquivo .TXT.`;
+        document.getElementById("countJogosFixas").textContent = jogosGerados.length;
+        updateCounters();
+        updateCustoFixas();
+        conferirJogos();
+        calcularBolao();
+        salvarEstado();
+        avisar(`${jogosGerados.length} jogo(s) importado(s) com sucesso!`, false);
+      }
+      event.target.value = "";
+    };
+    reader.readAsText(file, "utf-8");
   }
 
   function copyAllGames() {
@@ -985,14 +885,12 @@
     const blob = new Blob([getTextoJogos()], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url; a.download = `lotofacil-matriz-${Date.now()}.txt`; a.click();
+    a.href = url; a.download = "lotofacil-matriz.txt"; a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    try { localStorage.setItem("loto_facil_ja_exportou", "1"); } catch (e) {}
-    avisar("Arquivo .TXT baixado! Guarde-o para conferir depois.", false);
   }
 
   // ============================================================
-  // 11. BOOTSTRAP
+  // 7. BOOTSTRAP
   // ============================================================
   verificarSessao();
   </script>
